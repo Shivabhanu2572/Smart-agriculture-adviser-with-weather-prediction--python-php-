@@ -31,6 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $sql = "UPDATE users SET fullname='$fullname', email='$email', location='$location', age=$age, gender='$gender', contact='$contact' $update_photo WHERE id=$user_id";
     if ($conn->query($sql)) {
+        // After successful profile update (e.g., after update query and before redirect)
+        $_SESSION['last_profile_update'] = date('Y-m-d H:i:s');
         header("Location: profile_dashboard.php");
         exit();
     } else {

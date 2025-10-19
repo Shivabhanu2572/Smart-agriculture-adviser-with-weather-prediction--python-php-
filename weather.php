@@ -17,6 +17,17 @@ $currentData = json_decode(file_get_contents($currentUrl), true);
 $forecastUrl = "https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&units=metric&appid=$apiKey";
 $forecastData = json_decode(file_get_contents($forecastUrl), true);
 
+// 3. One Call API for alerts (if available)
+$oneCallUrl = "https://api.openweathermap.org/data/2.5/onecall?lat=$lat&lon=$lon&appid=$apiKey&units=metric";
+$oneCallData = json_decode(@file_get_contents($oneCallUrl), true);
+
+// Default alert message
+$alertMsg = "No weather alerts from free API";
+if (isset($oneCallData['alerts']) && count($oneCallData['alerts']) > 0) {
+    $firstAlert = $oneCallData['alerts'][0];
+    $alertMsg = "<strong>" . htmlspecialchars($firstAlert['event']) . ":</strong> " . htmlspecialchars($firstAlert['description']);
+}
+
 // Parse current
 $current = [
     "temp" => round($currentData['main']['temp']),
@@ -24,7 +35,11 @@ $current = [
     "humidity" => $currentData['main']['humidity'],
     "weather" => $currentData['weather'][0]['main'],
     "icon" => $currentData['weather'][0]['icon'],
-    "updated" => date("g:i A")
+    "updated" => date("g:i A"),
+    // Real-time rainfall (mm in last 1h)
+    "precip" => isset($currentData['rain']['1h']) ? $currentData['rain']['1h'] : 0,
+    // Real-time rain chance (from first forecast entry, as %)
+    "chance" => isset($forecastData['list'][0]['pop']) ? round($forecastData['list'][0]['pop'] * 100) : 0
 ];
 
 // Parse next 5 days (first 5 unique days only)
@@ -61,6 +76,6 @@ echo json_encode([
     "current" => $current,
     "forecast" => $forecast,
     "hourly" => $hourly,
-    "alert" => "No weather alerts from free API"
+    "alert" => $alertMsg
 ]);
 ?>

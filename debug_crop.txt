@@ -1,0 +1,36 @@
+Array
+(
+    [soil_type] => laterite
+    [ph] => 0
+    [moisture] => 0
+)
+Array
+(
+    [soil_type] => laterite
+    [ph] => 6
+    [moisture] => 0
+)
+Array
+(
+    [soil_type] => laterite
+    [ph] => 6
+    [moisture] => 1
+)
+Array
+(
+    [soil_type] => laterite
+    [ph] => 6
+    [moisture] => 0
+)
+Array
+(
+    [soil_type] => laterite
+    [ph] => 6
+    [moisture] => 4
+)
+Array
+(
+    [soil_type] => laterite
+    [ph] => 6
+    [moisture] => 40
+)
