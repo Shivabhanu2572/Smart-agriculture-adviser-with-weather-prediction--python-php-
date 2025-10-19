@@ -160,3 +160,314 @@ def main():
 
 if __name__ == "__main__":
     main()
+crop_advice.py
+import mysql.connector
+
+def get_crop_advice(soil_type, ph, moisture, season):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+
+    query = """SELECT * FROM crops
+               WHERE soil_type=%s AND ph_min<=%s AND ph_max>=%s
+               AND moisture_min<=%s AND moisture_max>=%s
+               AND season=%s"""
+    cursor.execute(query, (soil_type, ph, ph, moisture, moisture, season))
+    crops = cursor.fetchall()
+    conn.close()
+    return crops
+
+if __name__ == "__main__":
+    result = get_crop_advice("Loamy", 6.5, 45, "Monsoon")
+    print("Recommended crops:", result)
+import mysql.connector
+
+def get_crop_advice(soil_type, ph, moisture, season):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+
+    query = """SELECT * FROM crops
+               WHERE soil_type=%s AND ph_min<=%s AND ph_max>=%s
+               AND moisture_min<=%s AND moisture_max>=%s
+               AND season=%s"""
+    cursor.execute(query, (soil_type, ph, ph, moisture, moisture, season))
+    crops = cursor.fetchall()
+    conn.close()
+    return crops
+
+if __name__ == "__main__":
+    result = get_crop_advice("Loamy", 6.5, 45, "Monsoon")
+    print("Recommended crops:", result)
+2️⃣ weather.py
+python
+Copy code
+import requests
+
+def get_weather(city):
+    api_key = "YOUR_API_KEY"  # Replace with your OpenWeatherMap API key
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    data = response.json()
+    if data.get("main"):
+        return {
+            "temperature": data["main"]["temp"],
+            "humidity": data["main"]["humidity"],
+            "wind_speed": data["wind"]["speed"],
+            "description": data["weather"][0]["description"]
+        }
+    else:
+        return {"error": "City not found"}
+
+if __name__ == "__main__":
+    print(get_weather("Bangalore"))
+3️⃣ admin_irrigation.py
+python
+Copy code
+import mysql.connector
+
+def get_irrigation_schedule(crop_name):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM irrigation WHERE crop_name=%s", (crop_name,))
+    schedule = cursor.fetchall()
+    conn.close()
+    return schedule
+
+if __name__ == "__main__":
+    schedule = get_irrigation_schedule("Tomato")
+    print(schedule)
+4️⃣ admin_prices.py
+python
+Copy code
+import mysql.connector
+
+def get_market_prices(crop_name):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM market_prices WHERE crop_name=%s ORDER BY date DESC LIMIT 5", (crop_name,))
+    prices = cursor.fetchall()
+    conn.close()
+    return prices
+
+if __name__ == "__main__":
+    print(get_market_prices("Tomato"))
+5️⃣ admin_analytics.py
+python
+Copy code
+import mysql.connector
+
+def get_crop_analytics(crop_name):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT AVG(price) as avg_price, MAX(price) as max_price, MIN(price) as min_price FROM market_prices WHERE crop_name=%s", (crop_name,))
+    analytics = cursor.fetchone()
+    conn.close()
+    return analytics
+
+if __name__ == "__main__":
+    print(get_crop_analytics("Tomato"))
+6️⃣ equipment_rental.py
+python
+Copy code
+import mysql.connector
+
+def get_equipment_rentals(equipment_name=None):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    if equipment_name:
+        cursor.execute("SELECT * FROM equipment_rentals WHERE equipment_name=%s", (equipment_name,))
+    else:
+        cursor.execute("SELECT * FROM equipment_rentals")
+    rentals = cursor.fetchall()
+    conn.close()
+    return rentals
+
+if __name__ == "__main__":
+    print(get_equipment_rentals())
+7️⃣ market_price_cache.py
+python
+Copy code
+import json
+import os
+
+CACHE_FILE = "market_price_cache.json"
+
+def save_cache(data):
+    with open(CACHE_FILE, "w") as f:
+        json.dump(data, f)
+
+def load_cache():
+    if os.path.exists(CACHE_FILE):
+        with open(CACHE_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+if __name__ == "__main__":
+    sample_data = {"Tomato": 25, "Onion": 30}
+    save_cache(sample_data)
+    print(load_cache())
+
+2️⃣ weather.py
+import requests
+
+def get_weather(city):
+    api_key = "YOUR_API_KEY"  # Replace with your OpenWeatherMap API key
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+    response = requests.get(url)
+    data = response.json()
+    if data.get("main"):
+        return {
+            "temperature": data["main"]["temp"],
+            "humidity": data["main"]["humidity"],
+            "wind_speed": data["wind"]["speed"],
+            "description": data["weather"][0]["description"]
+        }
+    else:
+        return {"error": "City not found"}
+
+if __name__ == "__main__":
+    print(get_weather("Bangalore"))
+
+3️⃣ admin_irrigation.py
+import mysql.connector
+
+def get_irrigation_schedule(crop_name):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM irrigation WHERE crop_name=%s", (crop_name,))
+    schedule = cursor.fetchall()
+    conn.close()
+    return schedule
+
+if __name__ == "__main__":
+    schedule = get_irrigation_schedule("Tomato")
+    print(schedule)
+
+4️⃣ admin_prices.py
+import mysql.connector
+
+def get_market_prices(crop_name):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM market_prices WHERE crop_name=%s ORDER BY date DESC LIMIT 5", (crop_name,))
+    prices = cursor.fetchall()
+    conn.close()
+    return prices
+
+if __name__ == "__main__":
+    print(get_market_prices("Tomato"))
+
+5️⃣ admin_analytics.py
+import mysql.connector
+
+def get_crop_analytics(crop_name):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT AVG(price) as avg_price, MAX(price) as max_price, MIN(price) as min_price FROM market_prices WHERE crop_name=%s", (crop_name,))
+    analytics = cursor.fetchone()
+    conn.close()
+    return analytics
+
+if __name__ == "__main__":
+    print(get_crop_analytics("Tomato"))
+
+6️⃣ equipment_rental.py
+import mysql.connector
+
+def get_equipment_rentals(equipment_name=None):
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="smart_agri"
+    )
+    cursor = conn.cursor(dictionary=True)
+    if equipment_name:
+        cursor.execute("SELECT * FROM equipment_rentals WHERE equipment_name=%s", (equipment_name,))
+    else:
+        cursor.execute("SELECT * FROM equipment_rentals")
+    rentals = cursor.fetchall()
+    conn.close()
+    return rentals
+
+if __name__ == "__main__":
+    print(get_equipment_rentals())
+
+import json
+import os
+
+CACHE_FILE = "market_price_cache.json"
+
+def save_cache(data):
+    with open(CACHE_FILE, "w") as f:
+        json.dump(data, f)
+
+def load_cache():
+    if os.path.exists(CACHE_FILE):
+        with open(CACHE_FILE, "r") as f:
+            return json.load(f)
+    return {}
+
+if __name__ == "__main__":
+    sample_data = {"Tomato": 25, "Onion": 30}
+    save_cache(sample_data)
+    print(load_cache())
+
+✅ How to integrate
+
+Create a folder in your project:
+
+C:/xampp/htdocs/smrt/py_modules/
+
+
+Save the 7 .py files inside py_modules/.
+
+Run individually using Git Bash or Python:
+
+cd C:/xampp/htdocs/smrt/py_modules
+python crop_advice.py
+python weather.py
